@@ -275,4 +275,12 @@ footer span {
   .main__discovery{
   width:98%;
   }
+
+  form input {
+  width: 95%;
+  }
+
+  .sumbit__button {
+  width: 95%;
+  }
 }
