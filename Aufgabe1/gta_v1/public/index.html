@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 
 <!-- File origin: VS1LAB A1a -->
-
+<!-- Abgabe A1 (Präsenz): acma1012 Max, puli1011 Liv, muis1011 Ishara, giel1011 Elias -->
 <html lang="en">
 
 <head>
@@ -27,9 +27,24 @@
 
             <!-- ############### VS1Lab 1a Form 1 Start -->
             <form id="tag-form" action="/tagging" method="post">
-
+                
                 <!-- ... your code here ... -->
+                <fieldset>
+                <legend>Add a new GeoTag</legend>
+                <label for="latitude" >Latitude:</label>
+                <input class="coordinates" type="number" name="geoTagLatitude" id="latitude" step="any" placeholder=" e.g 49.01379">
 
+                <label for="longitude" >Longitude:</label>
+                <input class="coordinates" type="number" name="geoTagLongitude" id="longitude" step="any" placeholder=" e.g 8.404435">
+
+                <label for="geoTagName" >Name:</label>
+                <input type="text" name="geoTagName" id="geoTagName" maxlength="10" placeholder=" e.g. Center Karlsruhe" required>
+
+                <label for="hashtag">Hashtag:</label>
+                <input type="text" name="geoTagHashtag" id="hashtag" placeholder=" #Karlsruhe" pattern="#[A-Za-z]" maxlength="11">
+                <input class="sumbit__button" type="submit" value=" Add Tag">
+                <!-- <button class="sumbit__button" type="submit" value="Add Tag">Add Tag</button> -->
+                </fieldset>
             </form>
             <!-- ############### VS1Lab 1a Form 1 End -->
 
@@ -39,10 +54,18 @@
             <h2 class="discovery__title">Discovery</h2>
 
             <!-- ############### VS1Lab 1a Form 2 Start -->
+           
             <form class="discovery__search" id="discoveryFilterForm" action="/discovery" method="post">
-
-                <!-- ... your code here ... -->
-
+                <fieldset> 
+                <legend>Search</legend>
+                <label for="searchterm">Search terms or keywords</label>
+                <input type="text" name="searchterm" id="searchterm" placeholder=" Karlsruhe">
+                <input type="hidden" name="searchterm" value="searchterm">
+                <input type="hidden" name="longitude" value="49.01379">
+                <input type="hidden" name="latitude" value="8.404435">
+                <input class="sumbit__button" type="submit" value=" Search">
+                <!-- <button class="sumbit__button"type="submit" value="Search">Search</button> -->
+            </fieldset>
             </form>
             <!-- ############### VS1Lab 1a Form 2 End -->
 
