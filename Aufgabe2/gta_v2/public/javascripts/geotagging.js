@@ -14,6 +14,7 @@ console.log("The geoTagging script is going to start...");
  */
 class LocationHelper {
     // Location values for latitude and longitude are private properties to protect them from changes.
+    // private instance field
     #latitude = '';
 
     /**
@@ -33,7 +34,8 @@ class LocationHelper {
      * The 'findLocation' method requests the current location details through the geolocation API.
      * It is a static method that should be used to obtain an instance of LocationHelper.
      * Throws an exception if the geolocation API is not available.
-     * @param {*} callback a function that will be called with a LocationHelper instance as parameter, that has the current location details
+     * @param {*} callback a function that will be called with a LocationHelper instance as parameter, 
+     * that has the current location details
      */
     static findLocation(callback) {
         const geoLocationApi = navigator.geolocation;
@@ -103,8 +105,21 @@ class MapManager {
  * It is called once the page has been fully loaded.
  */
 // ... your code here ...
+function updateLocation() {
+    // find elements to give live coordniates to and save in variables
+    var longitude__coordinates = document.getElementByClassName("longitude__coord");
+    var latitude__coordinates = document.getElementByClassName("latitude__coord");
+    var discovery__longitude = document.getElementByClassName("discovery__longitude");
+    var discovery__latitude = document.getElementsByClassName("discovery__latitude");
+
+    // assign new values with get method
+    // hidden inputs
+    longitude__coordinates.value = longitude();
+    latitude__coordinates.value = latitude();
+    // discovery
+    discovery__longitude.innerHtml = longitude();
+    discovery__latitude.innerHtml = latitude();
+}
 
 // Wait for the page to fully load its DOM content, then call updateLocation
-document.addEventListener("DOMContentLoaded", () => {
-    alert("Please change the script 'geotagging.js'");
-});
+document.addEventListener("DOMContentLoaded", updateLocation());
