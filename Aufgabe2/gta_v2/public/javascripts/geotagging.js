@@ -105,7 +105,10 @@ class MapManager {
  * It is called once the page has been fully loaded.
  */
 // ... your code here ...
+ourMap = new MapManager("z7XNyJqZ5PRhjiOOTuFyzBNrm6hI6H6y");
+
 function updateLocation() {
+
     // find elements to give live coordniates to and save in variables
     var longitude__coordinates = document.getElementsByClassName("longitude__coord")[0];
     var latitude__coordinates = document.getElementsByClassName("latitude__coord")[0];
@@ -119,6 +122,9 @@ function updateLocation() {
     // discovery
     discovery__longitude.innerHtml = longitude;
     discovery__latitude.innerHtml = latitude;
+
+    document.getElementsByClassName("discovery__map").src = ourMap.getMapUrl(latitude, longitude,[latitude__coordinates,longitude__coordinates,name], 10);
+    // sanity check: this worked: document.body.style.backgroundColor = "green";
 }
 
 // Wait for the page to fully load its DOM content, then call updateLocation
