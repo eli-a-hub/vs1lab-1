@@ -107,18 +107,18 @@ class MapManager {
 // ... your code here ...
 function updateLocation() {
     // find elements to give live coordniates to and save in variables
-    var longitude__coordinates = document.getElementByClassName("longitude__coord");
-    var latitude__coordinates = document.getElementByClassName("latitude__coord");
-    var discovery__longitude = document.getElementByClassName("discovery__longitude");
+    var longitude__coordinates = document.getElementsByClassName("longitude__coord")[0];
+    var latitude__coordinates = document.getElementsByClassName("latitude__coord")[0];
+    var discovery__longitude = document.getElementsByClassName("discovery__longitude")[0];
     var discovery__latitude = document.getElementsByClassName("discovery__latitude");
 
     // assign new values with get method
     // hidden inputs
-    longitude__coordinates.value = longitude();
-    latitude__coordinates.value = latitude();
+    longitude__coordinates = longitude;
+    latitude__coordinates = latitude;
     // discovery
-    discovery__longitude.innerHtml = longitude();
-    discovery__latitude.innerHtml = latitude();
+    discovery__longitude.innerHtml = longitude;
+    discovery__latitude.innerHtml = latitude;
 }
 
 // Wait for the page to fully load its DOM content, then call updateLocation
