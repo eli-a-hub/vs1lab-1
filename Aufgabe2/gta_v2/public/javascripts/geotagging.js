@@ -14,7 +14,6 @@ console.log("The geoTagging script is going to start...");
  */
 class LocationHelper {
     // Location values for latitude and longitude are private properties to protect them from changes.
-    // private instance field
     #latitude = '';
 
     /**
@@ -34,8 +33,7 @@ class LocationHelper {
      * The 'findLocation' method requests the current location details through the geolocation API.
      * It is a static method that should be used to obtain an instance of LocationHelper.
      * Throws an exception if the geolocation API is not available.
-     * @param {*} callback a function that will be called with a LocationHelper instance as parameter, 
-     * that has the current location details
+     * @param {*} callback a function that will be called with a LocationHelper instance as parameter, that has the current location details
      */
     static findLocation(callback) {
         const geoLocationApi = navigator.geolocation;
@@ -105,27 +103,31 @@ class MapManager {
  * It is called once the page has been fully loaded.
  */
 // ... your code here ...
-ourMap = new MapManager("z7XNyJqZ5PRhjiOOTuFyzBNrm6hI6H6y");
+ourMap = new MapManager("9JoohNhdn98fOEdzquKuTR4RRZaGKjMm");
 
 function updateLocation() {
+    LocationHelper.findLocation(function(helper) {
+      var longitude__coords = helper.longitude;
+      var latitude__coords = helper.latitude;
+  
+      var tLong = document.getElementById("tagLongitude");
+      tLong.value = longitude__coords;
+      var tLat = document.getElementById("tagLatitude");
+      tLat.value = latitude__coords;
+      var dLong = document.getElementById("discLongitude");
+      dLong.value = longitude__coords;
+      var dLat = document.getElementById("discLatitude");
+      dLat.value = latitude__coords;
 
-    // find elements to give live coordniates to and save in variables
-    var longitude__coordinates = document.getElementsByClassName("longitude__coord")[0];
-    var latitude__coordinates = document.getElementsByClassName("latitude__coord")[0];
-    var discovery__longitude = document.getElementsByClassName("discovery__longitude")[0];
-    var discovery__latitude = document.getElementsByClassName("discovery__latitude");
-
-    // assign new values with get method
-    // hidden inputs
-    longitude__coordinates = longitude;
-    latitude__coordinates = latitude;
-    // discovery
-    discovery__longitude.innerHtml = longitude;
-    discovery__latitude.innerHtml = latitude;
-
-    document.getElementsByClassName("discovery__map").src = ourMap.getMapUrl(latitude, longitude,[latitude__coordinates,longitude__coordinates,name], 10);
-    // sanity check: this worked: document.body.style.backgroundColor = "green";
-}
-
+      /*const currentTagList = {
+            latitude: latitude__coords,
+            longitude: longitude__coords,
+            name: "",
+            tags: ""
+      };*/
+  
+      document.getElementById("mapView").src = ourMap.getMapUrl(latitude__coords, longitude__coords, [latitude__coords, longitude__coords] , 10); // [currentTagList] ?
+    });
+  }
 // Wait for the page to fully load its DOM content, then call updateLocation
 document.addEventListener("DOMContentLoaded", updateLocation());
