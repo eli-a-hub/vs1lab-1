@@ -21,7 +21,9 @@ var longitude__coords;
 var latitude__coords;
 function updateLocation() {
   //if(!(true)) {
-  if(!(longitude__coords && latitude__coords)) {
+  console.log(document.getElementById("tagLatitude"))
+  console.log(document.getElementById("discLongitude"))
+  if(!(document.getElementById("tagLongitude") && document.getElementById("tagLatitude"))) {
       LocationHelper.findLocation(function (helper) {
         console.log("Entered findLocation")
         longitude__coords = helper.longitude;
