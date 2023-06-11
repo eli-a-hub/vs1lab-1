@@ -177,7 +177,8 @@ form input {
   background-color: var(--background-color);
 }
 
-.sumbit__button{
+
+.submit__button{
   margin: 0.7em;
   display: inline-felx;
   font-size: 0.8em;
@@ -280,7 +281,8 @@ footer span {
   width: 95%;
   }
 
-  .sumbit__button {
+
+  .submit__button {
   width: 95%;
   }
 }
