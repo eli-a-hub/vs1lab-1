@@ -96,12 +96,10 @@ router.post('/tagging', (req, res) => {
 
 // TODO: ... your code here ...
 
-router.post('/discovery', (req, res) => {
-  let latitude = req.body['latitude']; 
-  let longitude = req.body['longitude'];
-  let keyword = req.body['keyword'];
-  let searchedTags = store.searchNearbyGeoTags({latitude: latitude, longitude: longitude}, keyword);
-  res.render('index', {taglist: searchedTags, resLat: latitude, resLong: longitude, resTags: JSON.stringify(searchedTags)});
+router.post('/discovery',(req, res)=> {
+  let keyword = req.body["keyword"];
+  let searchTags = store.searchNearbyGeoTags(keyword);
+  res.render("index", { taglist: searchTags, resLat: req.body["latitude"], resLong: req.body["longitude"], resTags: JSON.stringify(searchTags)});   
 });
 
 module.exports = router;
