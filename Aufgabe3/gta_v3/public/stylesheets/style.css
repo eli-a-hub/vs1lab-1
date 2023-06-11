@@ -177,6 +177,7 @@ form input {
   background-color: var(--background-color);
 }
 
+
 .submit__button{
   margin: 0.7em;
   display: inline-felx;
@@ -279,6 +280,7 @@ footer span {
   form input {
   width: 95%;
   }
+
 
   .submit__button {
   width: 95%;
