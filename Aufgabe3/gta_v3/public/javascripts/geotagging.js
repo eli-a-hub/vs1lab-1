@@ -61,4 +61,4 @@ function updateLocation() {
   }
 }
 
-document.addEventListener("DOMContentLoaded", updateLocation(), true);
+document.addEventListener("DOMContentLoaded", updateLocation, true);

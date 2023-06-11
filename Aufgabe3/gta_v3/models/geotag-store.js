@@ -49,7 +49,7 @@ class InMemoryGeoTagStore{
         for(let i = 0; i < this.#storeGeoTag.length; i++) {
             if(this.getDistance(location.latitude, location.longitude, 
                 this.#storeGeoTag[i].latitude, this.#storeGeoTag[i].longitude) <= radius) {
-                nearTags.push(storeGeoTag[i]);
+                nearTags.push(this.#storeGeoTag[i]);
             }
         }
         return nearTags;
@@ -60,7 +60,7 @@ class InMemoryGeoTagStore{
         for(let i = 0; i < this.#storeGeoTag.length; i++) {
             let distance = this.getDistance(location.latitude, location.longitude, this.#storeGeoTag[i].latitude, this.#storeGeoTag[i].longitude);
             if(distance <= radius && (this.#storeGeoTag[i].name.includes(keyword) || this.#storeGeoTag[i].hashtag.includes(keyword))) {
-                nearTags.push(storeGeoTag[i]);
+                nearTags.push(this.#storeGeoTag[i]);
             }
         }
         return nearTags;
