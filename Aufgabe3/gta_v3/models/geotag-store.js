@@ -28,27 +28,27 @@ const GeoTag = require("./geotag");
 class InMemoryGeoTagStore{
 
     // TODO: ... your code here ...
-    constructor() {
-        storeGeoTag = [];
-    }
-
+    
+    #storeGeoTag = [];
+    
     addGeoTag(geotag) {
-        storeGeoTag.push(geoTag);
+        this.#storeGeoTag.push(geotag);
     }
 
     removeGeoTag(name) {
-        for(let i = 0; i < storeGeoTag.length; i++) {
-            if(name == storeGeoTag[i]) {
-                storeGeoTag.splice(i, 1);
+        for(let i = 0; i < this.#storeGeoTag.length; i++) {
+            if(name === this.#storeGeoTag[i].name) {
+                this.#storeGeoTag.splice(i);
+                break;
             }
         }
     }
 
     getNearbyGeoTags(location){
         let nearTags = [];
-        for(let i = 0; i < storeGeoTag.length; i++) {
-            if(getDistance(location.latitude, location.longitude, 
-                storeGeoTag[i].latitude, storeGeoTag[i].longitude) <= radius) {
+        for(let i = 0; i < this.#storeGeoTag.length; i++) {
+            if(this.getDistance(location.latitude, location.longitude, 
+                this.#storeGeoTag[i].latitude, this.#storeGeoTag[i].longitude) <= radius) {
                 nearTags.push(storeGeoTag[i]);
             }
         }
@@ -57,22 +57,26 @@ class InMemoryGeoTagStore{
 
     searchNearbyGeoTags(location, keyword) {
         let nearTags = [];
-        for(let i = 0; i < storeGeoTag.length; i++) {
-            let distance = getDistance(location.latitude, location.longitude, storeGeoTag[i].latitude, storeGeoTag[i].longitude);
-            if(distance <= radius && (storeGeoTag[i].name.includes(keyword) || storeGeoTag[i].hashtag.includes(keyword))) {
+        for(let i = 0; i < this.#storeGeoTag.length; i++) {
+            let distance = this.getDistance(location.latitude, location.longitude, this.#storeGeoTag[i].latitude, this.#storeGeoTag[i].longitude);
+            if(distance <= radius && (this.#storeGeoTag[i].name.includes(keyword) || this.#storeGeoTag[i].hashtag.includes(keyword))) {
                 nearTags.push(storeGeoTag[i]);
             }
         }
         return nearTags;
     }
 
+    getTags() {
+        return this.#storeGeoTag;
+    } 
+
     // Use haversine formula to calculate distance between coordinates
     getDistance(lat1,lon1,lat2,lon2) {
         var rEarth = 6371; // radius of the earth in km
-        var distLon = degToRad(lon2-lon1); 
-        var distLat = degToRad(lat2-lat1);
+        var distLon = this.degToRad(lon2-lon1); 
+        var distLat = this.degToRad(lat2-lat1);
         
-        var a = Math.sin(distLat/2) * Math.sin(distLat/2) + Math.cos(degToRad(lat1)) * Math.cos(degToRad(lat2)) * 
+        var a = Math.sin(distLat/2) * Math.sin(distLat/2) + Math.cos(this.degToRad(lat1)) * Math.cos(this.degToRad(lat2)) * 
           Math.sin(distLon/2) * Math.sin(distLon/2); 
 
         var c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a)); 

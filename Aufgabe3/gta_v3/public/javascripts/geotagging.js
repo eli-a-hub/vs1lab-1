@@ -1,5 +1,3 @@
-import LocationHelper from './location-helper.js';
-import MapManager from './map-manager.js';
 /* eslint-disable no-unused-vars */
 
 // This script is executed when the browser loads index.html.
@@ -14,8 +12,7 @@ console.log("The geoTagging script is going to start...");
  * It is called once the page has been fully loaded.
  */
 // ... your code here ...
-//const locationHelper = new LocationHelper();
-const ourMap = new MapManager("9JoohNhdn98fOEdzquKuTR4RRZaGKjMm");
+
 
 console.log(document.getElementById("tagLongitude").value + " before reset")
 //document.getElementById("tag-form").reset()
@@ -23,37 +20,45 @@ console.log(document.getElementById("tagLongitude").value + " after reset")
 
 var longitude__coords = (document.getElementById("tagLongitude")).value;
 var latitude__coords = (document.getElementById("tagLatitude")).value;
+
 function updateLocation() {
-  //if(!(true)) {
+
+  const ourMap = new MapManager("9JoohNhdn98fOEdzquKuTR4RRZaGKjMm");  
   console.log(document.getElementById("tagLongitude").value)
-  //document.getElementById("discoveryFilterForm").reset()
+  
+  var img= document.getElementById("mapView");
+  var tags = null;
+  let nearGeoTaglist = JSON.parse(img.getAttribute("data-tags"));
+  
 
   if(longitude__coords == '' || latitude__coords == '') {
     LocationHelper.findLocation(function (helper) {
       console.log("Entered findLocation")
+      
       longitude__coords = helper.longitude;
       latitude__coords = helper.latitude;
+
       var tLong = document.getElementById("tagLongitude");
       tLong.value = longitude__coords;
+
       var tLat = document.getElementById("tagLatitude");
       tLat.value = latitude__coords;
+
       var dLong = document.getElementById("discLongitude");
       dLong.value = longitude__coords;
+
       var dLat = document.getElementById("discLatitude");
       dLat.value = latitude__coords;
 
-      /*const currentTagList = {
-            latitude: latitude__coords,
-            longitude: longitude__coords,
-            name: "",
-            tags: ""
-      };*/
+    
+
       console.log(document.getElementById("tagLongitude").value);
-      document.getElementById("mapView").src = ourMap.getMapUrl(latitude__coords, longitude__coords, [latitude__coords, longitude__coords], 10); // [currentTagList] ?
+      img.src = ourMap.getMapUrl(latitude__coords, longitude__coords, nearGeoTaglist, 15);
     });
+
   } else {
-    document.getElementById("mapView").src = ourMap.getMapUrl(latitude__coords, longitude__coords, [latitude__coords, longitude__coords], 10); // [currentTagList] ?
+    img.src = ourMap.getMapUrl(latitude__coords, longitude__coords, nearGeoTaglist, 15);
   }
 }
 
-document.addEventListener("DOMContentLoaded", updateLocation());
+document.addEventListener("DOMContentLoaded", updateLocation(), true);

@@ -38,5 +38,3 @@ class MapManager {
         return mapQuestUrl;
     }
 }
-
-export default MapManager;
