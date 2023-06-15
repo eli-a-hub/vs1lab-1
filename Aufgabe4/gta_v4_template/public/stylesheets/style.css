@@ -1,0 +1,288 @@
+/*
+  File origin: VS1LAB A1b  
+
+  CSS style is BEM. Classes used for CSS, IDs for JavaScript querying (future use).
+  CSS variables used for clarity and themability (e.g. through SSR). 
+  Inherited box sizing used for ease of including 3rd party content-box components.
+*/
+
+/* Global styling */
+
+html {
+  box-sizing: border-box;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+
+  /* This approach prevents issues with 3rd party content-box components */
+  box-sizing: inherit;
+}
+
+
+/* Variables (example: see declaration for "a" below) */
+
+:root {
+  --link-color: #00B7FF;
+  --background-color: #efefef;
+  --border-color: #cdcdcd;
+  --gray-color: #666;
+}
+
+
+/* HTML element styles */
+
+body {
+  font: 14px "Lucida Grande", Helvetica, Arial, sans-serif;
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+a {
+  color: var(--link-color);
+}
+
+a:hover{
+  color:orange;
+}
+
+/* ### TODO ### Styles for other HTML elements */
+
+/* ... your code here ... */
+
+
+/* Grid styles (no changes required) */
+
+.row {
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  flex: 1;
+}
+
+.col-1 {
+  width: calc(8.33% - 1rem);
+}
+
+.col-2 {
+  width: calc(16.66% - 1rem);
+}
+
+.col-3 {
+  width: calc(25% - 1rem);
+}
+
+.col-4 {
+  width: calc(33.33% - 1rem);
+}
+
+.col-5 {
+  width: calc(41.66% - 1rem);
+}
+
+.col-6 {
+  width: calc(50% - 1rem);
+}
+
+.col-7 {
+  width: calc(58.33% - 1rem);
+}
+
+.col-8 {
+  width: calc(66.66% - 1rem);
+}
+
+.col-9 {
+  width: calc(75% - 1rem);
+}
+
+.col-10 {
+  width: calc(83.33% - 1rem);
+}
+
+.col-11 {
+  width: calc(91.66% - 1rem);
+}
+
+.col-12 {
+  width: calc(100% - 1rem);
+}
+
+
+/* ### TODO ### Styles for Header Component */
+/* ... your code here ... */
+header {
+  display: flex;
+  background-color: lightgray;
+  align-items: center;
+  text-align: center;
+  justify-content: space-between;
+}
+
+.header__image {
+  padding: 1em;
+  margin-left: 2em;
+  max-width: 40px !important;
+  min-width: 10% !important;
+}
+
+.header__navigation {
+  margin-right: 2em;
+}
+
+
+
+/* ### TODO ### Styles for Main Component */
+/* ... your code here ... */
+main {
+  display: flex;
+}
+section{
+  padding: 1em;
+}
+
+h2 {
+  margin-bottom: 0.5em;
+}
+
+.main__tagging {
+  width: 33%;
+}
+
+.main__discovery{
+  width: 66%;
+}
+
+/* ### TODO ### Styles for Tagging component */
+/* ... your code here ... */
+form legend {
+  margin: 0.7em;
+}
+
+form fieldset {
+  border: 0.07em solid var(--border-color);
+}
+form input {
+  margin: 0.4em 0.7rem 0.7em 0.7em;
+  display: flex;
+  font-size: 0.8em;
+  border: 0.1em solid var(--border-color);
+  width: 11rem;
+  height: 1.7rem;
+}
+
+.coordinates{
+  background-color: var(--background-color);
+}
+
+
+.submit__button{
+  margin: 0.7em;
+  display: inline-felx;
+  font-size: 0.8em;
+  border: 0.1em solid var(--border-color);
+  width: 11rem;
+  height: 1.7rem;
+  justify-content: center;
+  align-items: center;
+
+}
+
+form label{
+  display: inline-block;
+  margin: 0.1em 0 0 0.7em;
+}
+
+.addTag {
+  width: 12.5em;
+  text-align: center;
+}
+
+/* ### TODO ### Styles for Discovery component */
+/* ... your code here ... */
+div.discovery__wrapper{
+  display: flex;
+  padding: 1em 1em 1em 0em;
+}
+
+div.discovery__map{
+  display: flex;
+  flex-direction: column;
+  padding: 1em;
+}
+
+div.discovery__map span{
+  margin-top: 0.3em;
+}
+
+
+
+li{
+  width: 16rem;
+  display: inline-flex;
+  background-color: lightgray;
+  color: #00B7FF;
+  height:45px;
+  margin: 0.9em 0.9em 0.9em 0em;
+  padding: 0.9em;
+  border: 0.07em solid #666;
+  /*border-radius: 5px;*/
+}
+
+.search {
+  width: 12.5em;
+  text-align: center;
+}
+
+/* ### TODO ### Styles for Footer Component */
+/* ... your code here ... */
+footer{
+  display: flex;
+  background-color: lightgray;
+  text-align: center;
+  height: 50px;
+}
+
+footer span {
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  margin-left: 2em;
+}
+
+
+/* ### TODO ### Media Queries */
+/* ... your code here ... */
+@media (max-width: 900px) {
+  div.discovery__wrapper {
+    display: flex;
+    flex-direction: column;
+  }
+}
+@media (max-width: 750px) {
+  main {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .main__tagging {
+  width: 98%;
+  display: flex;
+  flex-direction: column;
+  }
+
+  .main__discovery{
+  width:98%;
+  }
+
+  form input {
+  width: 95%;
+  }
+
+
+  .submit__button {
+  width: 95%;
+  }
+}
