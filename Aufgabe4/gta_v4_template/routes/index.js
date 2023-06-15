@@ -108,7 +108,6 @@ router.post('/discovery',(req, res)=> {
   res.render("index", { taglist: searchTags, resLat: req.body["latitude"], resLong: req.body["longitude"], resTags: JSON.stringify(searchTags)});   
 });
 
-module.exports = router;
 /////////////////////////////////////////A3END/////////////////////////////////////////////////7
 
 
@@ -127,7 +126,14 @@ module.exports = router;
  */
 
 // TODO: ... your code here ...
-
+router.get('/api/geotags', (req,res)=> {
+  let keyword = req.body["keyword"];
+  let search = store.searchNearbyGeoTags(keyword);
+  let lat = req.body["latitude"];
+  let lon = req.body["longitude"];
+  let nearTags = store.getNearbyGeoTags({lat, lon});
+  res.render("index", {taglist: {nearTags, search}, resTags: JSON.stringify(nearTags, search)});
+});
 
 /**
  * Route '/api/geotags' for HTTP 'POST' requests.
@@ -141,7 +147,11 @@ module.exports = router;
  */
 
 // TODO: ... your code here ...
+router.post('api/geotags', (req, res)=> {
+  
 
+
+})
 
 /**
  * Route '/api/geotags/:id' for HTTP 'GET' requests.
