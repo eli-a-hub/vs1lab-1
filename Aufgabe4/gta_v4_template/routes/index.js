@@ -43,8 +43,9 @@ let store = new InMemoryGeoTagStore();
 
 // add geotag-examples to store
 GeoTagExamples.tagList.forEach(tag => {
-  store.addGeoTag(new GeoTag(tag[0], tag[1], tag[2], tag[3]));
-})
+  store.addGeoTag(new GeoTag(tag[0], tag[1], tag[2], tag[3], tag[4]));
+});
+store.giveID();
 
 /**
  * Route '/' for HTTP 'GET' requests.
@@ -78,7 +79,7 @@ router.get('/', (req, res) => {
 // TODO: ... your code here ...
 
 router.post('/tagging', (req, res) => {
-  let newTag = new GeoTag(req.body["geoTagName"], req.body["geoTagLatitude"], req.body["geoTagLongitude"], req.body["geoTagHashtag"]);
+  let newTag = new GeoTag(req.body["geoTagName"], req.body["geoTagLatitude"], req.body["geoTagLongitude"], req.body["geoTagHashtag"], req.body["geoTagID"]);
   store.addGeoTag(newTag);
   var nearTags = store.getNearbyGeoTags({latitude: newTag.latitude, longitude: newTag.longitude });
   res.render('index', {taglist: nearTags, resLat: newTag.latitude, resLong: newTag.longitude, resTags: JSON.stringify(nearTags)});
@@ -103,9 +104,9 @@ router.post('/tagging', (req, res) => {
 // TODO: ... your code here ...
 
 router.post('/discovery',(req, res)=> {
-  let keyword = req.body["keyword"];
-  let searchTags = store.searchNearbyGeoTags(keyword);
-  res.render("index", { taglist: searchTags, resLat: req.body["latitude"], resLong: req.body["longitude"], resTags: JSON.stringify(searchTags)});   
+    let keyword = req.body["keyword"];
+    searchTags = store.searchNearbyGeoTags(keyword);
+    res.render("index", { taglist: searchTags, resLat: req.body["latitude"], resLong: req.body["longitude"], resTags: JSON.stringify(searchTags)});
 });
 
 /////////////////////////////////////////A3END/////////////////////////////////////////////////7
@@ -126,13 +127,30 @@ router.post('/discovery',(req, res)=> {
  */
 
 // TODO: ... your code here ...
+// curl Aufruf Beispiel Keyword + Location: curl "http://localhost:3000/api/geotags/?keyword=edu&latitude=49.01369&longitude=8.404425"
+// curl Aufruf Beispiel nur Keyword: curl "http://localhost:3000/api/geotags/?keyword=Building"
+// curl Aufruf Beispiel nur Location: curl "http://localhost:3000/api/geotags/?latitude=49.01369&longitude=8.404425"
+// curl Aufruf Beispiel bei nichts(einfach alle GeoTags): curl "http://localhost:3000/api/geotags/"
 router.get('/api/geotags', (req,res)=> {
-  let keyword = req.body["keyword"];
-  let search = store.searchNearbyGeoTags(keyword);
-  let lat = req.body["latitude"];
-  let lon = req.body["longitude"];
-  let nearTags = store.getNearbyGeoTags({lat, lon});
-  res.render("index", {taglist: {nearTags, search}, resTags: JSON.stringify(nearTags, search)});
+  if (req.query.latitude == null || req.query.latitude === undefined || req.query.longitude == null || req.query.longitude === undefined){
+    if (req.query.keyword) {
+      let keyword = req.query.keyword;
+      let nearTags = store.searchNearbyGeoTags(keyword);
+      res.json(nearTags);
+    } else {
+      let storeList = store.getTags();
+      res.json(storeList);
+    }
+  } else {
+    if (req.query.keyword) {
+      let keyword = req.query.keyword;
+      let nearTags = store.searchNearbyGeoTags(keyword, {latitude: req.query.latitude, longitude: req.query.longitude});
+      res.json(nearTags);
+    } else {
+      let nearTags = store.getNearbyGeoTags({latitude: req.query.latitude, longitude: req.query.longitude});
+      res.json(nearTags);
+    }
+  }
 });
 
 /**
@@ -147,11 +165,20 @@ router.get('/api/geotags', (req,res)=> {
  */
 
 // TODO: ... your code here ...
-router.post('api/geotags', (req, res)=> {
-  
-
-
-})
+// curl Aufruf Beispiel: curl -I -X POST "http://localhost:3000/api/geotags/?name=test&latitude=49.01369&longitude=8.404425&hashtag=%23test1"
+router.post('/api/geotags', (req, res)=> {
+  let forcedHashtag = ""; // If hashtag not defined, 'undefined' in discovery list, so we force it
+  let newGeo;
+  if (req.query.hashtag == null || req.query.hashtag === undefined) {
+    newGeo = new GeoTag(req.query.name, req.query.latitude, req.query.longitude, forcedHashtag);
+  } else {
+    newGeo = new GeoTag(req.query.name, req.query.latitude, req.query.longitude, req.query.hashtag);
+  }
+  store.addGeoTag(newGeo);
+  let geoID = newGeo.id;
+  res.set({'Location': 'api/geotags/'+geoID, 'Status': '201 Created'});
+  res.json(newGeo);
+});
 
 /**
  * Route '/api/geotags/:id' for HTTP 'GET' requests.
@@ -164,7 +191,11 @@ router.post('api/geotags', (req, res)=> {
  */
 
 // TODO: ... your code here ...
-
+// curl Aufruf Beispiel: curl -X GET "http://localhost:3000/api/geotags/0"
+router.get('/api/geotags/:id', (req, res)=> {
+  let geoTag = store.searchID(req.params.id);
+  res.json(geoTag);
+});
 
 /**
  * Route '/api/geotags/:id' for HTTP 'PUT' requests.
@@ -181,7 +212,13 @@ router.post('api/geotags', (req, res)=> {
  */
 
 // TODO: ... your code here ...
-
+// curl Aufruf Beispiel: curl -X PUT "http://localhost:3000/api/geotags/9?name=test&latitude=49.01369&longitude=8.404425&hashtag=%23test1"
+router.put('/api/geotags/:id', (req, res) => {
+  let newTag = new GeoTag(req.query.name, req.query.latitude, req.query.longitude, req.query.hashtag, req.params.id);
+  store.replaceGeoTag(req.params.id, newTag);
+  let changedTag = store.searchID(req.params.id);
+  res.json(changedTag);
+});
 
 /**
  * Route '/api/geotags/:id' for HTTP 'DELETE' requests.
@@ -195,5 +232,10 @@ router.post('api/geotags', (req, res)=> {
  */
 
 // TODO: ... your code here ...
+// curl Aufruf Beispiel: curl -X DELETE "http://localhost:3000/api/geotags/0"
+router.delete('/api/geotags/:id', (req, res) => {
+  let deletedTag = store.removebyID(req.params.id);
+  res.json(deletedTag);
+});
 
 module.exports = router;

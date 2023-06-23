@@ -33,18 +33,42 @@ class InMemoryGeoTagStore{
     
     addGeoTag(geotag) {
         this.#storeGeoTag.push(geotag);
+        this.giveID();
     }
 
     removeGeoTag(name) {
         for(let i = 0; i < this.#storeGeoTag.length; i++) {
-            if(name === this.#storeGeoTag[i].name) {
-                this.#storeGeoTag.splice(i);
+            if(name.toLowerCase() === this.#storeGeoTag[i].name.toLowerCase()) {
+                this.#storeGeoTag.splice(i, 1);
+                this.giveID();
                 break;
             }
         }
     }
 
-    getNearbyGeoTags(location){
+    removebyID(id) {
+        for(let i = 0; i < this.#storeGeoTag.length; i++) {
+            if(id == this.#storeGeoTag[i].id) {
+                let deletedTag = this.#storeGeoTag.splice(i, 1);
+                this.giveID();
+                return deletedTag;
+            }
+        }
+    }
+
+    replaceGeoTag(id, newTag){
+        for(let i = 0; i < this.#storeGeoTag.length; i++) {
+            if(id == this.#storeGeoTag[i].id) {
+                this.#storeGeoTag.splice(i, 1, newTag);
+                break;
+            }
+        }
+    }
+
+    getNearbyGeoTags(location, radius){
+        if (radius == null || radius === undefined){
+            radius = 5; 
+        }
         let nearTags = [];
         for(let i = 0; i < this.#storeGeoTag.length; i++) {
             if(this.getDistance(location.latitude, location.longitude, 
@@ -55,17 +79,27 @@ class InMemoryGeoTagStore{
         return nearTags;
     }
 
-    searchNearbyGeoTags(keyword) {
+    searchNearbyGeoTags(keyword, location) {
         let nearTags = [];
-
-        for (let i = 0; i < this.#storeGeoTag.length; i++) {
-
-            if(this.#storeGeoTag[i].name.includes(keyword) || this.#storeGeoTag[i].hashtag.includes(keyword)) {
-                nearTags.push(this.#storeGeoTag[i]);
-            }
+        if (radius == null || radius === undefined){
+            radius = 5; 
         }
-
-        return nearTags;
+        if (location == null || location === undefined) { 
+            for (let i = 0; i < this.#storeGeoTag.length; i++) {
+                if(this.#storeGeoTag[i].name.toLowerCase().includes(keyword.toLowerCase()) || this.#storeGeoTag[i].hashtag.toLowerCase().includes(keyword.toLowerCase())) {
+                    nearTags.push(this.#storeGeoTag[i]);
+                }
+            } 
+            return nearTags;  
+        } else {
+            for (let i = 0; i < this.#storeGeoTag.length; i++) {
+                if(this.getDistance(location.latitude, location.longitude, 
+                    this.#storeGeoTag[i].latitude, this.#storeGeoTag[i].longitude) <= radius && this.#storeGeoTag[i].name.toLowerCase().includes(keyword.toLowerCase()) || this.#storeGeoTag[i].hashtag.toLowerCase().includes(keyword.toLowerCase())) {
+                    nearTags.push(this.#storeGeoTag[i]);
+                }
+            } 
+            return nearTags;   
+        }
     }
 
     getTags() {
@@ -89,6 +123,22 @@ class InMemoryGeoTagStore{
     degToRad(degree) {
         return degree * (Math.PI/180);
       }
+
+    giveID() {
+        for (let i = 0; i < this.#storeGeoTag.length; i++) {
+            this.#storeGeoTag[i].id = i;
+        }
+    }
+
+    searchID(id) {
+        let geoTag;
+        for (let i = 0; i < this.#storeGeoTag.length; i++) {
+            if (this.#storeGeoTag[i].id == id) {
+                geoTag = this.#storeGeoTag[i];
+            }
+        }
+        return geoTag;
+    }
 
 }
 

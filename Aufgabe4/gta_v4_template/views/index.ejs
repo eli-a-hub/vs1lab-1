@@ -44,7 +44,7 @@
 
                 <label for="hashtag">Hashtag:</label>
                 <input type="text" name="geoTagHashtag" id="hashtag" placeholder=" #Karlsruhe"  pattern="#.+" maxlength="10"></input>
-                <input class="sumbit__button" type="submit" value=" Add Tag"></input>
+                <input class="submit__button" type="submit" value="Add Tag" id="tagButton"></input>
                 <!-- <button class="sumbit__button" type="submit" value="Add Tag">Add Tag</button> -->
                 </fieldset>
             </form>
@@ -61,10 +61,10 @@
                 <fieldset> 
                 <legend>Search</legend>
                 <label for="searchterm">Search terms or keywords</label>
-                <input type="text" name="keyword" id="keyword" placeholder=" Karlsruhe"></input>
+                <input type="text" name="keyword" id="keyword" placeholder=" Karlsruhe" value=""></input>
                 <input type="hidden" name="longitude" id="discLongitude" value="<%= resLong %>"></input>
                 <input type="hidden" name="latitude" id="discLatitude" value="<%= resLat %>"></input>
-                <input class="submit__button" type="submit" value="Search"></input>
+                <input class="submit__button" type="submit" value="Search" id="searchButton"></input>
                 <!-- <button class="sumbit__button"type="submit" value="Search">Search</button> -->
                 </fieldset>
             </form>
@@ -74,7 +74,7 @@
                 <div class="discovery__taglist">
                     <ul class="discovery__results" id="discoveryResults">
                         <% if (taglist !== undefined) taglist.forEach(function(gtag) { %>
-                            <li><%= gtag.name %> ( <%= gtag.latitude %>,<%= gtag.longitude %>) <%= gtag.hashtag %> </li>
+                            <li><%= gtag.name %> ( <%= gtag.latitude %>,<%= gtag.longitude %>) <%= gtag.hashtag %> <!-- <%= gtag.id %> --> </li>
                         <% }); %>
                     </ul>
                 </div>
