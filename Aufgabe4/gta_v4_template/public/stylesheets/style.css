@@ -203,8 +203,16 @@ div.discovery__wrapper{
   padding: 1em 1em 1em 0em;
 }
 
+.discovery_taglist {
+  display: flex;
+}
+
+.pagination {
+  display: flex;
+}
+
 .paginationText{
-  margin: 0.2em;
+  margin: 1em;
   transform: translate(300%);
   color: black;
   padding: 0.5em 1em;
@@ -212,7 +220,6 @@ div.discovery__wrapper{
 
 }
 .paginationButton{
-  display: inline-flex;
   margin: 1.0em;
   transform: translate(440%);
   color: black;
