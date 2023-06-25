@@ -239,6 +239,9 @@ function clickSearch(event){
       else document.getElementById("prev").disabled = false;
       let pageInfo = document.getElementById("pageInfo");
       pageInfo.innerHTML = data.page + "/" + maxPages + " (" + getArrayLength(data.tags) + ")";
+      let doc = document.getElementById("tag-form");
+      doc["geoTagName"].value = "";
+      doc["geoTagHashtag"].value = "";
     })
     .catch(function(error) {
       console.error(error);
@@ -312,7 +315,12 @@ function clickAddTag(event) {
       else document.getElementById("next").disabled = false;
       if(currentPage <= 1) document.getElementById("prev").disabled = true;
       else document.getElementById("prev").disabled = false;
-      pageInfo.innerHTML = currentPage + "/" + maxPages + " (" + getArrayLength(nearGeoTaglist) + ")"; 
+      pageInfo.innerHTML = currentPage + "/" + maxPages + " (" + getArrayLength(nearGeoTaglist) + ")";
+      let disDoc = document.getElementById("discoveryFilterForm");
+      disDoc["keyword"].value = "";
+      let tagDoc = document.getElementById("tag-form");
+      tagDoc["geoTagName"].value = "";
+      tagDoc["geoTagHashtag"].value = "";
     })
     .catch(function(error) {
       console.error(error);
