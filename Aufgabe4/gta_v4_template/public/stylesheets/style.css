@@ -195,6 +195,13 @@ form label{
   margin: 0.1em 0 0 0.7em;
 }
 
+button:hover {
+  color: orange;
+}
+
+.submit__button:hover {
+  color: orange;
+}
 
 /* ### TODO ### Styles for Discovery component */
 /* ... your code here ... */
