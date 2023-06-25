@@ -27,6 +27,7 @@ function getArrayLength(tags){
 function updatePages(tags){
   let maxEntries = 5;
   maxPages = Math.ceil(Object.keys(tags).length / maxEntries);
+  if(maxPages == 0) maxPages = 1;
   return maxPages;
 }
 
@@ -42,12 +43,68 @@ function updateTagList(taglist, page) {
   return pageTags;
   }
 
-function clickPrev(event){
-  console.log('Clicked "previous" button');
-  event.preventDefault();
+function clickPrev(){
+  console.log('Clicked "prev" button');
+  let formData = new FormData(document.getElementById("discoveryFilterForm"));
+  let url = "http://localhost:3000/api/geotags";
+  let questionMark = false;
+  let lat;
+  let long;
+  currentPage--;
+
+  // Create URL with (optional) querys
+  if (formData.get("keyword") !== null && formData.get("keyword") !== undefined && formData.get("keyword") !== "") {
+    url += "?keyword=" + encodeURIComponent(formData.get("keyword"));
+    questionMark = true;
+  }
+  if (formData.get("latitude") !== null && formData.get("latitude") !== undefined && formData.get("latitude") !== "" && questionMark) {
+    url += "&latitude=" + encodeURIComponent(formData.get("latitude"));
+    lat = formData.get("latitude");
+  } else if (formData.get("latitude") !== null && formData.get("latitude") !== undefined && formData.get("latitude") !== "" && !questionMark){
+    url += "?latitude=" + encodeURIComponent(formData.get("latitude"));
+    lat = formData.get("latitude");
+    questionMark = true;
+  }
+  if (formData.get("longitude") !== null && formData.get("longitude") !== undefined && formData.get("longitude") !== "") {
+    url += "&longitude=" + encodeURIComponent(formData.get("longitude"));
+    long = formData.get("longitude");
+  }
+  if(questionMark) url += "&page=" + encodeURIComponent(currentPage);
+  if(!questionMark) url += "?page=" + encodeURIComponent(currentPage);
+  console.log("URL to fetch: " +url);
+  
+  fetch(url, {
+    method: "GET"
+  })
+    .then(function(res) {
+      // Check success status
+      if (res.ok) {
+        console.log("fetching...");
+        return res.json();
+      } else {
+        throw new Error("Error while fetching: " + res.status);
+      }
+    })
+    .then(function(data) {
+        // New map + update GeoTag discovery List with generateNewHTML(tagList)
+        const ourMap = new MapManager("9JoohNhdn98fOEdzquKuTR4RRZaGKjMm");
+        let img= document.getElementById("mapView");
+        img.src = ourMap.getMapUrl(lat, long, data.tags, 15);
+        let newHTML = generateNewHTML(updateTagList(data.tags, currentPage));
+        let discoveryListElement = document.getElementById("discoveryResults");
+        discoveryListElement.innerHTML = newHTML;
+        console.log(data.tags); 
+        // Code Zusatzaufgabe
+        let pageInfo = document.getElementById("pageInfo");
+        maxPages = updatePages(data.tags);
+        pageInfo.innerHTML = currentPage + "/" + maxPages + " (" + getArrayLength(data.tags) + ")";
+        if(currentPage == 1) document.getElementById("prev").disabled = true;
+        if(currentPage < maxPages && document.getElementById("next").disabled == true) document.getElementById("next").disabled = false;
+        
+    })
 }
 
-function clickNext(event){
+function clickNext(){
   console.log('Clicked "next" button');
   let formData = new FormData(document.getElementById("discoveryFilterForm"));
   let url = "http://localhost:3000/api/geotags";
@@ -101,8 +158,10 @@ function clickNext(event){
         console.log(data.tags); 
         // Code Zusatzaufgabe
         let pageInfo = document.getElementById("pageInfo");
-        pageInfo.innerHTML = currentPage + "/" + updatePages(data.tags) + " (" + getArrayLength(data.tags) + ")";
-        if(currentPage == maxPages) document.getElementById("next").disabled = true;
+        maxPages = updatePages(data.tags);
+        pageInfo.innerHTML = currentPage + "/" + maxPages + " (" + getArrayLength(data.tags) + ")";
+        if(currentPage >= maxPages) document.getElementById("next").disabled = true;
+        if(currentPage > 1 && document.getElementById("prev").disabled == true) document.getElementById("prev").disabled = false;
     })
     .catch(function(error) {
       console.error(error);
@@ -131,6 +190,7 @@ function clickSearch(event){
   let questionMark = false;
   let lat;
   let long;
+  currentPage = 1;
 
   // Create URL with (optional) querys
   if (formData.get("keyword") !== null && formData.get("keyword") !== undefined && formData.get("keyword") !== "") {
@@ -172,8 +232,13 @@ function clickSearch(event){
       discoveryListElement.innerHTML = newHTML;
       console.log(data.tags); 
       // Code Zusatzaufgabe
+      maxPages = updatePages(data.tags);
+      if(currentPage >= maxPages) document.getElementById("next").disabled = true;
+      else document.getElementById("next").disabled = false;
+      if(currentPage <= 1) document.getElementById("prev").disabled = true;
+      else document.getElementById("prev").disabled = false;
       let pageInfo = document.getElementById("pageInfo");
-      pageInfo.innerHTML = data.page + "/" + updatePages(data.tags) + " (" + getArrayLength(data.tags) + ")";
+      pageInfo.innerHTML = data.page + "/" + maxPages + " (" + getArrayLength(data.tags) + ")";
     })
     .catch(function(error) {
       console.error(error);
@@ -190,6 +255,7 @@ function clickAddTag(event) {
   let url = "http://localhost:3000/api/geotags";
   let lat;
   let long;
+  currentPage = 1;
 
   // Create URL with (optional) querys
   if (formData.get("geoTagName") !== null && formData.get("geoTagName") !== undefined && formData.get("geoTagName") !== "") {
@@ -240,7 +306,13 @@ function clickAddTag(event) {
       console.log(nearGeoTaglist);
       // Code Zusatzaufgabe
       let pageInfo = document.getElementById("pageInfo");
-      pageInfo.innerHTML = data.page + "/" + updatePages(nearGeoTaglist) + " (" + getArrayLength(nearGeoTaglist) + ")"; 
+      maxPages = updatePages(nearGeoTaglist);
+      currentPage = data.page;
+      if(currentPage >= maxPages) document.getElementById("next").disabled = true;
+      else document.getElementById("next").disabled = false;
+      if(currentPage <= 1) document.getElementById("prev").disabled = true;
+      else document.getElementById("prev").disabled = false;
+      pageInfo.innerHTML = currentPage + "/" + maxPages + " (" + getArrayLength(nearGeoTaglist) + ")"; 
     })
     .catch(function(error) {
       console.error(error);
