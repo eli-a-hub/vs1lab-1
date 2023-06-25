@@ -180,7 +180,7 @@ form input {
 
 .submit__button{
   margin: 0.7em;
-  display: inline-felx;
+  display: inline-flex;
   font-size: 0.8em;
   border: 0.1em solid var(--border-color);
   width: 11rem;
@@ -201,6 +201,26 @@ form label{
 div.discovery__wrapper{
   display: flex;
   padding: 1em 1em 1em 0em;
+}
+
+.paginationText{
+  margin: 0.2em;
+  transform: translate(300%);
+  color: black;
+  padding: 0.5em 1em;
+  text-decoration: none;
+
+}
+.paginationButton{
+  display: inline-flex;
+  margin: 1.0em;
+  transform: translate(440%);
+  color: black;
+  background-color: white;
+  padding: 0.5em 1em;
+  border-radius: 50%;
+  border: 0.1em solid var(--border-color);
+  text-decoration: none;
 }
 
 div.discovery__map{

@@ -9,12 +9,22 @@
 console.log("The geoTagging script is going to start...");
 
 // Code A4
+function getArrayLength(tags){
+  let info = Object.keys(tags).length;
+  return info;
+}
+
+function updatePages(tags){
+  let maxEntries = 5;
+  let maxPages = Math.ceil(Object.keys(tags).length / maxEntries);
+  return maxPages;
+}
 //                      -- Discovery Section --
 function generateNewHTML(tagList) {     // Generates new HTML with CSS of old discoveryList
   var html = '<ul class="discovery__results" id="discoveryResults">';
 
-  tagList.forEach(function(gtag) {
-    html += `<li>${gtag.name} (${gtag.latitude},${gtag.longitude}) ${gtag.hashtag} <!-- ${gtag.id} --></li>`;
+  tagList.forEach(gtag => {
+    html += `<li>${gtag.name} (${gtag.latitude},${gtag.longitude}) ${gtag.hashtag}</li>`;
   });
 
   html += '</ul>';
@@ -72,6 +82,9 @@ function clickSearch(event){
       let discoveryListElement = document.getElementById("discoveryResults");
       discoveryListElement.innerHTML = newHTML;
       console.log(nearGeoTaglist); 
+      // Code Zusatzaufgabe
+      let pageInfo = document.getElementById("pageInfo");
+      pageInfo.innerHTML = "1/" + updatePages(nearGeoTaglist) + " (" + getArrayLength(nearGeoTaglist) + ")";
     })
     .catch(function(error) {
       console.error(error);
@@ -134,7 +147,10 @@ function clickAddTag(event) {
       let discoveryListElement = document.getElementById("discoveryResults");
       discoveryListElement.innerHTML = newHTML;
       img.setAttribute("data-tags", JSON.stringify(nearGeoTaglist));
-      console.log(nearGeoTaglist); 
+      console.log(nearGeoTaglist);
+      // Code Zusatzaufgabe
+      let pageInfo = document.getElementById("pageInfo");
+      pageInfo.innerHTML = "1/" + updatePages(nearGeoTaglist) + " (" + getArrayLength(nearGeoTaglist) + ")"; 
     })
     .catch(function(error) {
       console.error(error);

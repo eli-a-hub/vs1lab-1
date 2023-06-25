@@ -47,6 +47,7 @@ GeoTagExamples.tagList.forEach(tag => {
 });
 store.giveID();
 
+
 /**
  * Route '/' for HTTP 'GET' requests.
  * (http://expressjs.com/de/4x/api.html#app.get.method)
@@ -58,7 +59,7 @@ store.giveID();
 
 // TODO: extend the following route example if necessary
 router.get('/', (req, res) => {
-  res.render('index', { taglist: store.getTags() , resLat: "", resLong: "", resTags: JSON.stringify(store.getTags())});
+  res.render('index', { taglist: store.getTagsPage(3) , resLat: "", resLong: "", resTags: JSON.stringify(store.getTags()), pageNumber: "1/" + Math.ceil(Object.keys(store.getTags()).length/5), pageElements: Object.keys(store.getTags()).length});
 });
 
 /**

@@ -106,6 +106,17 @@ class InMemoryGeoTagStore{
         return this.#storeGeoTag;
     } 
 
+    getTagsPage(page) {
+        let n = page*5;
+        let range = Array.from(Array(n).keys())
+        let taglist = [];
+        for (let i = n-5; i < range.length; i++) {
+            if(this.#storeGeoTag[i] == null || this.#storeGeoTag[i] === undefined) break;
+            taglist.push(this.#storeGeoTag[i]);
+        }
+        return taglist;
+    } 
+
     // Use haversine formula to calculate distance between coordinates
     getDistance(lat1,lon1,lat2,lon2) {
         var rEarth = 6371; // radius of the earth in km
