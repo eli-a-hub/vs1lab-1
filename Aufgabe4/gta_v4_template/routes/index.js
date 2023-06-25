@@ -59,7 +59,7 @@ store.giveID();
 
 // TODO: extend the following route example if necessary
 router.get('/', (req, res) => {
-  res.render('index', { taglist: store.getTagsPage(3) , resLat: "", resLong: "", resTags: JSON.stringify(store.getTags()), pageNumber: "1/" + Math.ceil(Object.keys(store.getTags()).length/5), pageElements: Object.keys(store.getTags()).length});
+  res.render('index', { taglist: store.getTagsPage(1) , resLat: "", resLong: "", resTags: JSON.stringify(store.getTags()), PageNumber: 1, maxPageNumber: Math.ceil(Object.keys(store.getTags()).length/5), pageElements: Object.keys(store.getTags()).length});
 });
 
 /**
@@ -128,28 +128,55 @@ router.post('/discovery',(req, res)=> {
  */
 
 // TODO: ... your code here ...
-// curl Aufruf Beispiel Keyword + Location: curl "http://localhost:3000/api/geotags/?keyword=edu&latitude=49.01369&longitude=8.404425"
-// curl Aufruf Beispiel nur Keyword: curl "http://localhost:3000/api/geotags/?keyword=Building"
-// curl Aufruf Beispiel nur Location: curl "http://localhost:3000/api/geotags/?latitude=49.01369&longitude=8.404425"
-// curl Aufruf Beispiel bei nichts(einfach alle GeoTags): curl "http://localhost:3000/api/geotags/"
+// curl Aufruf Beispiel Keyword + Location: curl -X GET "http://localhost:3000/api/geotags/?keyword=edu&latitude=49.01369&longitude=8.404425"
+// curl Aufruf Beispiel nur Keyword: curl -X GET "http://localhost:3000/api/geotags/?keyword=Building"
+// curl Aufruf Beispiel nur Location: curl -X GET "http://localhost:3000/api/geotags/?latitude=49.01369&longitude=8.404425"
+// curl Aufruf Beispiel bei nichts(einfach alle GeoTags): curl -X GET "http://localhost:3000/api/geotags/"
 router.get('/api/geotags', (req,res)=> {
-  if (req.query.latitude == null || req.query.latitude === undefined || req.query.longitude == null || req.query.longitude === undefined){
-    if (req.query.keyword) {
-      let keyword = req.query.keyword;
-      let nearTags = store.searchNearbyGeoTags(keyword);
-      res.json(nearTags);
+  if(req.query.page === undefined || req.query.page == null){
+    if (req.query.latitude == null || req.query.latitude === undefined || req.query.longitude == null || req.query.longitude === undefined){
+      if (req.query.keyword) {
+        let keyword = req.query.keyword;
+        let nearTags = store.searchNearbyGeoTags(keyword);
+        store.setPageNumber(1);
+        res.json({tags: nearTags, page: store.getPageNumber()});
+      } else { // <------------------------------------------------------
+        let storeList = store.getTags();
+        store.setPageNumber(1);
+        res.json({tags: storeList, page: store.getPageNumber()});
+      }
     } else {
-      let storeList = store.getTags();
-      res.json(storeList);
+      if (req.query.keyword) {
+        let keyword = req.query.keyword;
+        let nearTags = store.searchNearbyGeoTags(keyword, {latitude: req.query.latitude, longitude: req.query.longitude});
+        store.setPageNumber(1);
+        res.json({tags: nearTags, page: store.getPageNumber()});
+      } else {
+        let nearTags = store.getNearbyGeoTags({latitude: req.query.latitude, longitude: req.query.longitude});
+        store.setPageNumber(1);
+        res.json({tags: nearTags, page: store.getPageNumber()});
+      }
     }
-  } else {
-    if (req.query.keyword) {
-      let keyword = req.query.keyword;
-      let nearTags = store.searchNearbyGeoTags(keyword, {latitude: req.query.latitude, longitude: req.query.longitude});
-      res.json(nearTags);
+  }else {
+    store.setPageNumber(req.query.page);  
+    if (req.query.latitude == null || req.query.latitude === undefined || req.query.longitude == null || req.query.longitude === undefined){
+      if (req.query.keyword) {
+        let keyword = req.query.keyword;
+        let nearTags = store.searchNearbyGeoTags(keyword);
+        res.json({tags: nearTags, page: store.getPageNumber()});
+      } else {
+        let storeList = store.getTags();
+        res.json({tags: storeList, page: store.getPageNumber()});
+      }
     } else {
-      let nearTags = store.getNearbyGeoTags({latitude: req.query.latitude, longitude: req.query.longitude});
-      res.json(nearTags);
+      if (req.query.keyword) {
+        let keyword = req.query.keyword;
+        let nearTags = store.searchNearbyGeoTags(keyword, {latitude: req.query.latitude, longitude: req.query.longitude});
+        res.json({tags: nearTags, page: store.getPageNumber()});
+      } else {
+        let nearTags = store.getNearbyGeoTags({latitude: req.query.latitude, longitude: req.query.longitude});
+        res.json({tags: nearTags, page: store.getPageNumber()});
+      }
     }
   }
 });
@@ -178,7 +205,7 @@ router.post('/api/geotags', (req, res)=> {
   store.addGeoTag(newGeo);
   let geoID = newGeo.id;
   res.set({'Location': 'api/geotags/'+geoID, 'Status': '201 Created'});
-  res.json(newGeo);
+  res.json({tag: newGeo, page: store.getPageNumber()});
 });
 
 /**

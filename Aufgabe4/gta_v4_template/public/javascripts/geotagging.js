@@ -8,7 +8,17 @@
 
 console.log("The geoTagging script is going to start...");
 
-// Code A4
+document.getElementById("discoveryFilterForm").addEventListener("submit", clickSearch, false); // Event Listener for discovery submit button
+
+document.getElementById("tag-form").addEventListener("submit", clickAddTag, false); // Event Listener for tagging submit button
+
+document.getElementById("prev").addEventListener("click", clickPrev, false); // Event Listener for previous page button
+
+document.getElementById("next").addEventListener("click", clickNext, false); // Event Listener for next page button
+
+// Code A4 Pagination
+let currentPage = 1;
+let maxPages = 3;
 function getArrayLength(tags){
   let info = Object.keys(tags).length;
   return info;
@@ -16,9 +26,90 @@ function getArrayLength(tags){
 
 function updatePages(tags){
   let maxEntries = 5;
-  let maxPages = Math.ceil(Object.keys(tags).length / maxEntries);
+  maxPages = Math.ceil(Object.keys(tags).length / maxEntries);
   return maxPages;
 }
+
+function updateTagList(taglist, page) {
+  let n = page*5;
+  let range = Array.from(Array(n).keys())
+  let pageTags = [];
+  if (taglist == null || taglist === undefined) return pageTags;
+  for (let i = n-5; i < range.length; i++){
+    if(taglist[i] == null || taglist[i] === undefined) break;
+      pageTags.push(taglist[i]);
+  }
+  return pageTags;
+  }
+
+function clickPrev(event){
+  console.log('Clicked "previous" button');
+  event.preventDefault();
+}
+
+function clickNext(event){
+  console.log('Clicked "next" button');
+  let formData = new FormData(document.getElementById("discoveryFilterForm"));
+  let url = "http://localhost:3000/api/geotags";
+  let questionMark = false;
+  let lat;
+  let long;
+  currentPage++;
+
+  // Create URL with (optional) querys
+  if (formData.get("keyword") !== null && formData.get("keyword") !== undefined && formData.get("keyword") !== "") {
+    url += "?keyword=" + encodeURIComponent(formData.get("keyword"));
+    questionMark = true;
+  }
+  if (formData.get("latitude") !== null && formData.get("latitude") !== undefined && formData.get("latitude") !== "" && questionMark) {
+    url += "&latitude=" + encodeURIComponent(formData.get("latitude"));
+    lat = formData.get("latitude");
+  } else if (formData.get("latitude") !== null && formData.get("latitude") !== undefined && formData.get("latitude") !== "" && !questionMark){
+    url += "?latitude=" + encodeURIComponent(formData.get("latitude"));
+    lat = formData.get("latitude");
+    questionMark = true;
+  }
+  if (formData.get("longitude") !== null && formData.get("longitude") !== undefined && formData.get("longitude") !== "") {
+    url += "&longitude=" + encodeURIComponent(formData.get("longitude"));
+    long = formData.get("longitude");
+  }
+  if(questionMark) url += "&page=" + encodeURIComponent(currentPage);
+  if(!questionMark) url += "?page=" + encodeURIComponent(currentPage);
+  console.log("Page number set: " +currentPage);
+  console.log("URL to fetch: " +url);
+
+  fetch(url, {
+    method: "GET"
+  })
+    .then(function(res) {
+      // Check success status
+      if (res.ok) {
+        console.log("fetching...");
+        return res.json();
+      } else {
+        throw new Error("Error while fetching: " + res.status);
+      }
+    })
+    .then(function(data) {
+        // New map + update GeoTag discovery List with generateNewHTML(tagList)
+        const ourMap = new MapManager("9JoohNhdn98fOEdzquKuTR4RRZaGKjMm");
+        let img= document.getElementById("mapView");
+        img.src = ourMap.getMapUrl(lat, long, data.tags, 15);
+        let newHTML = generateNewHTML(updateTagList(data.tags, currentPage));
+        let discoveryListElement = document.getElementById("discoveryResults");
+        discoveryListElement.innerHTML = newHTML;
+        console.log(data.tags); 
+        // Code Zusatzaufgabe
+        let pageInfo = document.getElementById("pageInfo");
+        pageInfo.innerHTML = currentPage + "/" + updatePages(data.tags) + " (" + getArrayLength(data.tags) + ")";
+        if(currentPage == maxPages) document.getElementById("next").disabled = true;
+    })
+    .catch(function(error) {
+      console.error(error);
+    });
+}
+  
+  
 //                      -- Discovery Section --
 function generateNewHTML(tagList) {     // Generates new HTML with CSS of old discoveryList
   var html = '<ul class="discovery__results" id="discoveryResults">';
@@ -31,8 +122,6 @@ function generateNewHTML(tagList) {     // Generates new HTML with CSS of old di
 
   return html;
 }
-
-document.getElementById("discoveryFilterForm").addEventListener("submit", clickSearch, false); // Event Listener for discovery submit button
 
 function clickSearch(event){
   console.log('Clicked "Search" button');
@@ -73,18 +162,18 @@ function clickSearch(event){
         throw new Error("Error while fetching: " + res.status);
       }
     })
-    .then(function(nearGeoTaglist) {
+    .then(function(data) {
       // New map + update GeoTag discovery List with generateNewHTML(tagList)
       const ourMap = new MapManager("9JoohNhdn98fOEdzquKuTR4RRZaGKjMm");
       let img= document.getElementById("mapView");
-      img.src = ourMap.getMapUrl(lat, long, nearGeoTaglist, 15);
-      let newHTML = generateNewHTML(nearGeoTaglist);
+      img.src = ourMap.getMapUrl(lat, long, data.tags, 15);
+      let newHTML = generateNewHTML(updateTagList(data.tags, data.page));
       let discoveryListElement = document.getElementById("discoveryResults");
       discoveryListElement.innerHTML = newHTML;
-      console.log(nearGeoTaglist); 
+      console.log(data.tags); 
       // Code Zusatzaufgabe
       let pageInfo = document.getElementById("pageInfo");
-      pageInfo.innerHTML = "1/" + updatePages(nearGeoTaglist) + " (" + getArrayLength(nearGeoTaglist) + ")";
+      pageInfo.innerHTML = data.page + "/" + updatePages(data.tags) + " (" + getArrayLength(data.tags) + ")";
     })
     .catch(function(error) {
       console.error(error);
@@ -92,7 +181,7 @@ function clickSearch(event){
 }
 
 //                      -- Tagging Section --
-document.getElementById("tag-form").addEventListener("submit", clickAddTag, false); // Event Listener for tagging submit button
+
 function clickAddTag(event) {
   console.log('Clicked "Add Tag" button');
   event.preventDefault();
@@ -134,23 +223,24 @@ function clickAddTag(event) {
         throw new Error("Error while fetching: " + res.status);
       }
     })
-    .then(function(newGeoTag) {
+    .then(function(data) {
       // Add new GeoTag to the tagList and update the map + GeoTag discovery list
       const ourMap = new MapManager("9JoohNhdn98fOEdzquKuTR4RRZaGKjMm");  
       
       let img = document.getElementById("mapView");
       let nearGeoTaglist = JSON.parse(img.getAttribute("data-tags"));
-      nearGeoTaglist.push(newGeoTag);
+      nearGeoTaglist.push(data.tag);
       img.src = ourMap.getMapUrl(lat, long, nearGeoTaglist, 15);
-      console.log(JSON.stringify(newGeoTag) + " added.");
-      let newHTML = generateNewHTML(nearGeoTaglist);
+      console.log(JSON.stringify(data.tag) + " added.");
+      let smallerTagList = updateTagList(nearGeoTaglist, data.page);
+      let newHTML = generateNewHTML(smallerTagList);
       let discoveryListElement = document.getElementById("discoveryResults");
       discoveryListElement.innerHTML = newHTML;
       img.setAttribute("data-tags", JSON.stringify(nearGeoTaglist));
       console.log(nearGeoTaglist);
       // Code Zusatzaufgabe
       let pageInfo = document.getElementById("pageInfo");
-      pageInfo.innerHTML = "1/" + updatePages(nearGeoTaglist) + " (" + getArrayLength(nearGeoTaglist) + ")"; 
+      pageInfo.innerHTML = data.page + "/" + updatePages(nearGeoTaglist) + " (" + getArrayLength(nearGeoTaglist) + ")"; 
     })
     .catch(function(error) {
       console.error(error);
