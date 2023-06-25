@@ -203,25 +203,30 @@ div.discovery__wrapper{
   padding: 1em 1em 1em 0em;
 }
 
-.discovery_taglist {
+div.discovery_taglist {
   display: flex;
+  flex-direction: column;
 }
 
 .pagination {
+  width: 16rem;
   display: flex;
+  justify-content: space-around;
 }
 
 .paginationText{
-  margin: 1em;
-  transform: translate(300%);
+  display: inline-flex;
+  /*margin: 1em;*/
+  /*transform: translate(300%);*/
   color: black;
   padding: 0.5em 1em;
   text-decoration: none;
 
 }
 .paginationButton{
-  margin: 1.0em;
-  transform: translate(440%);
+  display: inline-flex;
+  /*margin: 1em;*/
+  /*transform: translate(440%);*/
   color: black;
   background-color: white;
   padding: 0.5em 1em;
@@ -284,8 +289,31 @@ footer span {
     display: flex;
     flex-direction: column;
   }
+  div.discovery_taglist {
+  display: flex;
+  flex-direction: column;
+}
+
+.pagination {
+  display: flex;
+  justify-content: space-around;
+}
+
+  
 }
 @media (max-width: 750px) {
+  div.discovery_taglist {
+  display: flex;
+  flex-direction: column;
+}
+li {
+  width: 98%;
+}
+.pagination {
+  display: flex;
+  justify-content: space-around;
+  width: 98%;
+}
   main {
     display: flex;
     flex-direction: column;
