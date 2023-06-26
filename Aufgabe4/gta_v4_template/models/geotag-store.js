@@ -108,18 +108,11 @@ class InMemoryGeoTagStore{
 
     getTagsPage(page, taglist) {
         let n = page*5;
-        let range = Array.from(Array(n).keys())
+        let range = Array.from(Array(n).keys());
         let pageTags = [];
-        if (taglist == null || taglist === undefined) {
-            for (let i = n-5; i < range.length; i++) {
-                if(this.#storeGeoTag[i] == null || this.#storeGeoTag[i] === undefined) break;
-                pageTags.push(this.#storeGeoTag[i]);
-            }
-        }else {
-            for (let i = n-5; i < range.length; i++){
-                if(taglist[i] == null || taglist[i] === undefined) break;
-                pageTags.push(taglist[i]);
-            }
+        for (let i = n-5; i < range.length; i++){
+            if(taglist[i] == null || taglist[i] === undefined) break;
+            pageTags.push(taglist[i]);
         }
         return pageTags;
     } 

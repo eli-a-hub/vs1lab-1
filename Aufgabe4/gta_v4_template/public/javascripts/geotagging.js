@@ -24,24 +24,11 @@ function getArrayLength(tags){
   return info;
 }
 
-function updatePages(tags){
-  let maxEntries = 5;
-  maxPages = Math.ceil(Object.keys(tags).length / maxEntries);
+function updatePages(elements){
+  maxPages = Math.ceil(elements / 5);
   if(maxPages == 0) maxPages = 1;
   return maxPages;
 }
-
-function updateTagList(taglist, page) {
-  let n = page*5;
-  let range = Array.from(Array(n).keys())
-  let pageTags = [];
-  if (taglist == null || taglist === undefined) return pageTags;
-  for (let i = n-5; i < range.length; i++){
-    if(taglist[i] == null || taglist[i] === undefined) break;
-      pageTags.push(taglist[i]);
-  }
-  return pageTags;
-  }
 
 function clickPrev(){
   console.log('Clicked "prev" button');
@@ -87,17 +74,19 @@ function clickPrev(){
     })
     .then(function(data) {
         // New map + update GeoTag discovery List with generateNewHTML(tagList)
-        const ourMap = new MapManager("9JoohNhdn98fOEdzquKuTR4RRZaGKjMm");
-        let img= document.getElementById("mapView");
-        img.src = ourMap.getMapUrl(lat, long, data.tags, 15);
-        let newHTML = generateNewHTML(updateTagList(data.tags, currentPage));
+        if (data.fullTags) {
+          const ourMap = new MapManager("9JoohNhdn98fOEdzquKuTR4RRZaGKjMm");
+          let img= document.getElementById("mapView");
+          img.src = ourMap.getMapUrl(lat, long, data.fullTags, 15);
+        }
+        let newHTML = generateNewHTML(data.tags);
         let discoveryListElement = document.getElementById("discoveryResults");
         discoveryListElement.innerHTML = newHTML;
         console.log(data.tags); 
         // Code Zusatzaufgabe
         let pageInfo = document.getElementById("pageInfo");
-        maxPages = updatePages(data.tags);
-        pageInfo.innerHTML = currentPage + "/" + maxPages + " (" + getArrayLength(data.tags) + ")";
+        maxPages = updatePages(data.elements);
+        pageInfo.innerHTML = currentPage + "/" + maxPages + " (" + data.elements + ")";
         if(currentPage == 1) document.getElementById("prev").disabled = true;
         if(currentPage < maxPages && document.getElementById("next").disabled == true) document.getElementById("next").disabled = false;
         
@@ -149,17 +138,19 @@ function clickNext(){
     })
     .then(function(data) {
         // New map + update GeoTag discovery List with generateNewHTML(tagList)
-        const ourMap = new MapManager("9JoohNhdn98fOEdzquKuTR4RRZaGKjMm");
-        let img= document.getElementById("mapView");
-        img.src = ourMap.getMapUrl(lat, long, data.tags, 15);
-        let newHTML = generateNewHTML(updateTagList(data.tags, currentPage));
+        if (data.fullTags) {
+          const ourMap = new MapManager("9JoohNhdn98fOEdzquKuTR4RRZaGKjMm");
+          let img= document.getElementById("mapView");
+          img.src = ourMap.getMapUrl(lat, long, data.tags, 15);
+        }
+        let newHTML = generateNewHTML(data.tags);
         let discoveryListElement = document.getElementById("discoveryResults");
         discoveryListElement.innerHTML = newHTML;
         console.log(data.tags); 
         // Code Zusatzaufgabe
         let pageInfo = document.getElementById("pageInfo");
-        maxPages = updatePages(data.tags);
-        pageInfo.innerHTML = currentPage + "/" + maxPages + " (" + getArrayLength(data.tags) + ")";
+        maxPages = updatePages(data.elements);
+        pageInfo.innerHTML = currentPage + "/" + maxPages + " (" + data.elements + ")";
         if(currentPage >= maxPages) document.getElementById("next").disabled = true;
         if(currentPage > 1 && document.getElementById("prev").disabled == true) document.getElementById("prev").disabled = false;
     })
@@ -224,21 +215,23 @@ function clickSearch(event){
     })
     .then(function(data) {
       // New map + update GeoTag discovery List with generateNewHTML(tagList)
-      const ourMap = new MapManager("9JoohNhdn98fOEdzquKuTR4RRZaGKjMm");
-      let img= document.getElementById("mapView");
-      img.src = ourMap.getMapUrl(lat, long, data.tags, 15);
-      let newHTML = generateNewHTML(updateTagList(data.tags, data.page));
+      if (data.fullTags) {
+        const ourMap = new MapManager("9JoohNhdn98fOEdzquKuTR4RRZaGKjMm");
+        let img= document.getElementById("mapView");
+        img.src = ourMap.getMapUrl(lat, long, data.fullTags, 15);
+      }
+      let newHTML = generateNewHTML(data.tags);
       let discoveryListElement = document.getElementById("discoveryResults");
       discoveryListElement.innerHTML = newHTML;
       console.log(data.tags); 
       // Code Zusatzaufgabe
-      maxPages = updatePages(data.tags);
+      maxPages = updatePages(data.elements);
       if(currentPage >= maxPages) document.getElementById("next").disabled = true;
       else document.getElementById("next").disabled = false;
       if(currentPage <= 1) document.getElementById("prev").disabled = true;
       else document.getElementById("prev").disabled = false;
       let pageInfo = document.getElementById("pageInfo");
-      pageInfo.innerHTML = data.page + "/" + maxPages + " (" + getArrayLength(data.tags) + ")";
+      pageInfo.innerHTML = data.page + "/" + maxPages + " (" + data.elements + ")";
       let doc = document.getElementById("tag-form");
       doc["geoTagName"].value = "";
       doc["geoTagHashtag"].value = "";
@@ -294,28 +287,26 @@ function clickAddTag(event) {
     })
     .then(function(data) {
       // Add new GeoTag to the tagList and update the map + GeoTag discovery list
-      const ourMap = new MapManager("9JoohNhdn98fOEdzquKuTR4RRZaGKjMm");  
-      
-      let img = document.getElementById("mapView");
+      const ourMap = new MapManager("9JoohNhdn98fOEdzquKuTR4RRZaGKjMm");
+      let img= document.getElementById("mapView");
+      img.src = ourMap.getMapUrl(lat, long, data.fullTags, 15);
       let nearGeoTaglist = JSON.parse(img.getAttribute("data-tags"));
       nearGeoTaglist.push(data.tag);
-      img.src = ourMap.getMapUrl(lat, long, nearGeoTaglist, 15);
       console.log(JSON.stringify(data.tag) + " added.");
-      let smallerTagList = updateTagList(nearGeoTaglist, data.page);
-      let newHTML = generateNewHTML(smallerTagList);
+      let newHTML = generateNewHTML(data.tags);
       let discoveryListElement = document.getElementById("discoveryResults");
       discoveryListElement.innerHTML = newHTML;
       img.setAttribute("data-tags", JSON.stringify(nearGeoTaglist));
       console.log(nearGeoTaglist);
       // Code Zusatzaufgabe
       let pageInfo = document.getElementById("pageInfo");
-      maxPages = updatePages(nearGeoTaglist);
+      maxPages = updatePages(data.elements);
       currentPage = data.page;
       if(currentPage >= maxPages) document.getElementById("next").disabled = true;
       else document.getElementById("next").disabled = false;
       if(currentPage <= 1) document.getElementById("prev").disabled = true;
       else document.getElementById("prev").disabled = false;
-      pageInfo.innerHTML = currentPage + "/" + maxPages + " (" + getArrayLength(nearGeoTaglist) + ")";
+      pageInfo.innerHTML = currentPage + "/" + maxPages + " (" + data.elements + ")";
       let disDoc = document.getElementById("discoveryFilterForm");
       disDoc["keyword"].value = "";
       let tagDoc = document.getElementById("tag-form");
